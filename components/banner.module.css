@@ -1,6 +1,6 @@
 /** By default, this is a mobile breakpoint **/
 .container {
-  margin-bottom: 1rem;
+  margin-bottom: 5rem;
 }
 
 .title {
@@ -64,6 +64,10 @@
 
 /** sm breakpoint **/
 @media (min-width: 640px) {
+  .container {
+    margin-bottom: 6rem;
+  }
+
   .title {
     font-size: 3rem /* 48px */;
     line-height: 1;
