@@ -7,7 +7,16 @@ import Card from "../components/card";
 
 import coffeeStores from "../data/coffee-stores.json";
 
-export default function Home() {
+export async function getStaticProps(context) {
+  // const coffeeStores = await fetchCoffeeStores();
+  return {
+    props: {
+      coffeeStores,
+    }, // will be passed to the page component as props
+  };
+}
+
+export default function Home(props) {
   const handleOnBannerBtnClick = () => {
     console.log("hi banner btn");
   };
@@ -39,7 +48,7 @@ export default function Home() {
           />
         </div>
         <div className={styles.cardLayout}>
-          {coffeeStores.map((coffeeStore) => {
+          {props.coffeeStores.map((coffeeStore) => {
             return (
               <Card
                 key={coffeeStore.id}
