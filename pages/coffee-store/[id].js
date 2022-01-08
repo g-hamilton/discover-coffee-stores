@@ -6,10 +6,13 @@ import cls from "classnames";
 
 import styles from "../../styles/coffee-store.module.css";
 
-import coffeeStoresData from "../../data/coffee-stores.json";
+// import coffeeStores from "../../data/coffee-stores.json";
+import { fetchCoffeeStores } from "../../lib/coffee-stores";
 
-export function getStaticPaths() {
-  const paths = coffeeStoresData.map((coffeeStore) => {
+export async function getStaticPaths() {
+  const coffeeStores = await fetchCoffeeStores();
+
+  const paths = coffeeStores.map((coffeeStore) => {
     return {
       params: {
         id: coffeeStore.id.toString(),
@@ -22,10 +25,12 @@ export function getStaticPaths() {
   };
 }
 
-export function getStaticProps(staticProps) {
+export async function getStaticProps(staticProps) {
+  const coffeeStores = await fetchCoffeeStores();
+
   return {
     props: {
-      coffeeStore: coffeeStoresData.find((coffeeStore) => {
+      coffeeStore: coffeeStores.find((coffeeStore) => {
         return coffeeStore.id.toString() === staticProps.params.id;
       }),
     },
@@ -64,7 +69,10 @@ const CoffeeStore = (props) => {
           <Image
             className={styles.storeImg}
             alt={`Coffee shop ${name}`}
-            src={imgUrl}
+            src={
+              imgUrl ||
+              `https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80`
+            }
             width={600}
             height={360}
             objectFit="cover"
@@ -81,15 +89,17 @@ const CoffeeStore = (props) => {
             />
             <p className={styles.text}>{address}</p>
           </div>
-          <div className={styles.iconWrapper}>
-            <Image
-              alt="neighbourhood icon"
-              src="/static/icons/places.svg"
-              width={24}
-              height={24}
-            />
-            <p className={styles.text}>{neighbourhood}</p>
-          </div>
+          {neighbourhood && (
+            <div className={styles.iconWrapper}>
+              <Image
+                alt="neighbourhood icon"
+                src="/static/icons/places.svg"
+                width={24}
+                height={24}
+              />
+              <p className={styles.text}>{neighbourhood}</p>
+            </div>
+          )}
           <div className={styles.iconWrapper}>
             <Image
               alt="votes icon"
