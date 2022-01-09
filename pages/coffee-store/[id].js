@@ -28,11 +28,13 @@ export async function getStaticPaths() {
 export async function getStaticProps(staticProps) {
   const coffeeStores = await fetchCoffeeStores();
 
+  const foundCoffeeStore = coffeeStores.find((coffeeStore) => {
+    return coffeeStore.id.toString() === staticProps.params.id;
+  });
+
   return {
     props: {
-      coffeeStore: coffeeStores.find((coffeeStore) => {
-        return coffeeStore.id.toString() === staticProps.params.id;
-      }),
+      coffeeStore: foundCoffeeStore ? foundCoffeeStore : {},
     },
   };
 }
