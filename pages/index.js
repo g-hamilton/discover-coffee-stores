@@ -9,7 +9,10 @@ import Card from "../components/card";
 // import coffeeStoresData from "../data/coffee-stores.json";
 import { fetchCoffeeStores } from "../lib/coffee-stores";
 import useTrackLocation from "../hooks/use-track-location";
-import { CoffeeStoreContext, ACTION_TYPES } from "./_app";
+import {
+  CoffeeStoreContext,
+  ACTION_TYPES,
+} from "../context/coffee-store-context";
 
 export async function getStaticProps(context) {
   const coffeeStores = await fetchCoffeeStores();

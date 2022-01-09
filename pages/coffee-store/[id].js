@@ -9,7 +9,7 @@ import styles from "../../styles/coffee-store.module.css";
 
 // import coffeeStores from "../../data/coffee-stores.json";
 import { fetchCoffeeStores } from "../../lib/coffee-stores";
-import { CoffeeStoreContext } from "../_app";
+import { CoffeeStoreContext } from "../../context/coffee-store-context";
 import { isEmptyObj } from "../../utils";
 
 export async function getStaticPaths() {

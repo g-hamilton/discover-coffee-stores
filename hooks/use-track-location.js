@@ -1,6 +1,9 @@
 import { useContext, useState } from "react";
 
-import { ACTION_TYPES, CoffeeStoreContext } from "../pages/_app";
+import {
+  ACTION_TYPES,
+  CoffeeStoreContext,
+} from "../context/coffee-store-context";
 
 const useTrackLocation = () => {
   const [locationErrorMsg, setLocationErrorMsg] = useState("");
