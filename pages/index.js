@@ -16,7 +16,7 @@ import {
 
 export async function getStaticProps(context) {
   const coffeeStores = await fetchCoffeeStores();
-  console.log({ coffeeStores });
+  // console.log({ coffeeStores });
   return {
     props: {
       coffeeStores,
@@ -41,7 +41,7 @@ export default function Home(props) {
             `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=15`
           );
           const coffeeStores = await response.json();
-          console.log({ coffeeStores });
+          // console.log({ coffeeStores });
           dispatch({
             type: ACTION_TYPES.SET_COFFEE_STORES,
             payload: {
