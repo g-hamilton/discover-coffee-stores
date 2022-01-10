@@ -61,6 +61,8 @@ const CoffeeStore = (initialProps) => {
           return coffeeStore.id.toString() === id;
         });
         setCoffeeStore(foundCoffeeStore);
+      } else {
+        setCoffeeStore({});
       }
     }
   }, [id]);
