@@ -1,4 +1,8 @@
-import { coffeeStoreTable, getMinifiedRecords } from "../../lib/airtable";
+import {
+  coffeeStoreTable,
+  getMinifiedRecords,
+  findRecordsByFilter,
+} from "../../lib/airtable";
 
 const createCoffeeStore = async (req, res) => {
   if (req.method === "POST") {
@@ -13,29 +17,14 @@ const createCoffeeStore = async (req, res) => {
       }
 
       // find a record
-      const foundCoffeeStoreRecords = await coffeeStoreTable
-        .select({ filterByFormula: `id="${id}"` })
-        .firstPage(); // returns an array (may be empty if no matching record)
+      const records = await findRecordsByFilter(id);
 
-      if (
-        foundCoffeeStoreRecords &&
-        foundCoffeeStoreRecords.length &&
-        foundCoffeeStoreRecords.length !== 0
-      ) {
-        // transform the records if found
-        const records = getMinifiedRecords(foundCoffeeStoreRecords);
-
-        // return the transformed records
-        res.json({ message: "Record already exists", records });
+      if (records && records.length && records.length > 0) {
+        res.status(200).json({ message: "Record already exists", records });
       } else {
         // create a new record if not found
 
         // validate
-        if (!id) {
-          return res
-            .status(400)
-            .json({ message: "Unable to complete: Missing id field" });
-        }
         if (!name) {
           return res
             .status(400)
