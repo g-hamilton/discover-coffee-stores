@@ -2,7 +2,6 @@ import { coffeeStoreTable, getMinifiedRecords } from "../../lib/airtable";
 
 const createCoffeeStore = async (req, res) => {
   if (req.method === "POST") {
-    console.log(req.body);
     const { id, name, address, neighbourhood, voting, imgUrl } = req.body;
 
     try {

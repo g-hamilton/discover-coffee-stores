@@ -1,4 +1,4 @@
-export const isEmptyObj = (obj) => {
+export const isEmpty = (obj) => {
   if (!obj) {
     return true; // return true even if not an object type
   }

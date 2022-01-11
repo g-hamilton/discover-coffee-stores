@@ -10,7 +10,7 @@ import styles from "../../styles/coffee-store.module.css";
 // import coffeeStores from "../../data/coffee-stores.json";
 import { fetchCoffeeStores } from "../../lib/coffee-stores";
 import { CoffeeStoreContext } from "../../context/coffee-store-context";
-import { isEmptyObj } from "../../utils";
+import { isEmpty } from "../../utils";
 
 export async function getStaticPaths() {
   const coffeeStores = await fetchCoffeeStores();
@@ -74,14 +74,13 @@ const CoffeeStore = (initialProps) => {
       });
 
       const dbCoffeeStore = await response.json();
-      console.log({ dbCoffeeStore });
     } catch (err) {
       console.log("Error creating coffee store", err);
     }
   };
 
   useEffect(() => {
-    if (isEmptyObj(coffeeStore)) {
+    if (isEmpty(initialProps.coffeeStore)) {
       if (coffeeStores.length > 0) {
         const coffeeStoreFromContext = coffeeStores.find((coffeeStore) => {
           return coffeeStore.id.toString() === id;
@@ -95,8 +94,11 @@ const CoffeeStore = (initialProps) => {
       } else {
         setCoffeeStore({});
       }
+    } else {
+      // SSG
+      handleCreateCoffeeStore(initialProps.coffeeStore);
     }
-  }, [id]);
+  }, [coffeeStores, id, initialProps.coffeeStore]);
 
   if (router.isFallback) {
     return <div>Loading...</div>;
