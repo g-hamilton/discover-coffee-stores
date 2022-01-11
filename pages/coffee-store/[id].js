@@ -45,7 +45,9 @@ export async function getStaticProps(staticProps) {
 const CoffeeStore = (initialProps) => {
   // console.log({ initialProps });
 
-  const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+  const [coffeeStore, setCoffeeStore] = useState(
+    initialProps.coffeeStore ? initialProps.coffeeStore : {}
+  );
   const {
     state: { coffeeStores },
   } = useContext(CoffeeStoreContext);
@@ -74,30 +76,39 @@ const CoffeeStore = (initialProps) => {
       });
 
       const dbCoffeeStore = await response.json();
+      console.log(dbCoffeeStore.message);
+      return dbCoffeeStore;
     } catch (err) {
       console.log("Error creating coffee store", err);
     }
   };
 
   useEffect(() => {
-    if (isEmpty(initialProps.coffeeStore)) {
-      if (coffeeStores.length > 0) {
-        const coffeeStoreFromContext = coffeeStores.find((coffeeStore) => {
-          return coffeeStore.id.toString() === id;
-        });
-        if (coffeeStoreFromContext) {
-          setCoffeeStore(coffeeStoreFromContext);
-          handleCreateCoffeeStore(coffeeStoreFromContext);
+    async function initClientSide() {
+      if (isEmpty(initialProps.coffeeStore)) {
+        if (coffeeStores.length > 0) {
+          const coffeeStoreFromContext = coffeeStores.find((coffeeStore) => {
+            return coffeeStore.id.toString() === id;
+          });
+          if (coffeeStoreFromContext) {
+            setCoffeeStore(coffeeStoreFromContext);
+            handleCreateCoffeeStore(coffeeStoreFromContext);
+          }
         } else {
-          setCoffeeStore({});
+          // No data in context - perform db lookup by id
+          if (id) {
+            const response = await handleCreateCoffeeStore({ id });
+            if (response.records && response.records.length) {
+              setCoffeeStore(response.records[0]);
+            }
+          }
         }
       } else {
-        setCoffeeStore({});
+        // SSG
+        handleCreateCoffeeStore(initialProps.coffeeStore);
       }
-    } else {
-      // SSG
-      handleCreateCoffeeStore(initialProps.coffeeStore);
     }
+    initClientSide();
   }, [coffeeStores, id, initialProps.coffeeStore]);
 
   if (router.isFallback) {
