@@ -4,6 +4,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import cls from "classnames";
+import useSWR from "swr";
 
 import styles from "../../styles/coffee-store.module.css";
 
@@ -49,7 +50,9 @@ const CoffeeStore = (initialProps) => {
     initialProps.coffeeStore ? initialProps.coffeeStore : {}
   );
 
-  const [votingCount, setVotingcount] = useState(1);
+  const { address, name, neighbourhood, imgUrl } = coffeeStore;
+
+  const [votingCount, setVotingcount] = useState(0);
 
   const {
     state: { coffeeStores },
@@ -58,6 +61,50 @@ const CoffeeStore = (initialProps) => {
   const router = useRouter();
 
   const id = router.query.id;
+
+  const fetcher = (url) => fetch(url).then((res) => res.json());
+  const { data, error } = useSWR(`/api/getCoffeeStoreById?id=${id}`, fetcher);
+
+  useEffect(() => {
+    if (
+      data &&
+      data.records &&
+      data.records.length &&
+      data.records.length > 0
+    ) {
+      console.log("Data from SWR:", data.records[0]);
+      setCoffeeStore(data.records[0]);
+      setVotingcount(data.records[0].voting);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    async function initClientSide() {
+      if (isEmpty(initialProps.coffeeStore)) {
+        if (coffeeStores.length > 0) {
+          const coffeeStoreFromContext = coffeeStores.find((coffeeStore) => {
+            return coffeeStore.id.toString() === id;
+          });
+          if (coffeeStoreFromContext) {
+            setCoffeeStore(coffeeStoreFromContext);
+            handleCreateCoffeeStore(coffeeStoreFromContext);
+          }
+        }
+      } else {
+        // SSG
+        handleCreateCoffeeStore(initialProps.coffeeStore);
+      }
+    }
+    initClientSide();
+  }, [coffeeStores, id, initialProps.coffeeStore]);
+
+  if (router.isFallback) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Something went wrong retrieving this page</div>;
+  }
 
   const handleCreateCoffeeStore = async (coffeeStore) => {
     try {
@@ -85,40 +132,6 @@ const CoffeeStore = (initialProps) => {
       console.log("Error creating coffee store", err);
     }
   };
-
-  useEffect(() => {
-    async function initClientSide() {
-      if (isEmpty(initialProps.coffeeStore)) {
-        if (coffeeStores.length > 0) {
-          const coffeeStoreFromContext = coffeeStores.find((coffeeStore) => {
-            return coffeeStore.id.toString() === id;
-          });
-          if (coffeeStoreFromContext) {
-            setCoffeeStore(coffeeStoreFromContext);
-            handleCreateCoffeeStore(coffeeStoreFromContext);
-          }
-        } else {
-          // No data in context - perform db lookup by id
-          if (id) {
-            const response = await handleCreateCoffeeStore({ id });
-            if (response.records && response.records.length) {
-              setCoffeeStore(response.records[0]);
-            }
-          }
-        }
-      } else {
-        // SSG
-        handleCreateCoffeeStore(initialProps.coffeeStore);
-      }
-    }
-    initClientSide();
-  }, [coffeeStores, id, initialProps.coffeeStore]);
-
-  if (router.isFallback) {
-    return <div>Loading...</div>;
-  }
-
-  const { address, name, neighbourhood, imgUrl } = coffeeStore;
 
   const handleUpvoteButton = () => {
     console.log("handle up vote");
