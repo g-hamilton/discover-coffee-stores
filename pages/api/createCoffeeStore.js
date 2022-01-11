@@ -1,9 +1,4 @@
-const Airtable = require("airtable");
-const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
-  process.env.AIRTABLE_BASE_ID
-);
-
-const table = base("coffee-stores");
+import { coffeeStoreTable, getMinifiedRecords } from "../../lib/airtable";
 
 const createCoffeeStore = async (req, res) => {
   if (req.method === "POST") {
@@ -18,7 +13,7 @@ const createCoffeeStore = async (req, res) => {
       }
 
       // find a record
-      const foundCoffeeStoreRecords = await table
+      const foundCoffeeStoreRecords = await coffeeStoreTable
         .select({ filterByFormula: `id=${id}` })
         .firstPage(); // returns an array (may be empty if no matching record)
 
@@ -28,11 +23,7 @@ const createCoffeeStore = async (req, res) => {
         foundCoffeeStoreRecords.length !== 0
       ) {
         // transform the records if found
-        const records = foundCoffeeStoreRecords.map((record) => {
-          return {
-            ...record.fields,
-          };
-        });
+        const records = getMinifiedRecords(foundCoffeeStoreRecords);
 
         // return the transformed records
         res.json({ message: "Record already exists", records });
@@ -61,7 +52,7 @@ const createCoffeeStore = async (req, res) => {
             .json({ message: "Unable to complete: Missing imgUrl field" });
         }
 
-        const createRecords = await table.create([
+        const createRecords = await coffeeStoreTable.create([
           {
             fields: {
               id,
@@ -75,11 +66,7 @@ const createCoffeeStore = async (req, res) => {
         ]);
 
         // transform the records if created successfully
-        const records = createRecords.map((record) => {
-          return {
-            ...record.fields,
-          };
-        });
+        const records = getMinifiedRecords(createRecords);
 
         // return the transformed records
         res.json({ message: "Record created", records });
