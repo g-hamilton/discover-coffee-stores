@@ -16,7 +16,6 @@ import {
 
 export async function getStaticProps(context) {
   const coffeeStores = await fetchCoffeeStores();
-  // console.log({ coffeeStores });
   return {
     props: {
       coffeeStores,
@@ -50,7 +49,7 @@ export default function Home(props) {
           });
           setCoffeeStoresError("");
         } catch (error) {
-          console.log({ error });
+          console.error({ error });
           setCoffeeStoresError(error.message);
         }
       }

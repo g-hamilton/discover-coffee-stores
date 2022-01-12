@@ -44,8 +44,6 @@ export async function getStaticProps(staticProps) {
 }
 
 const CoffeeStore = (initialProps) => {
-  // console.log({ initialProps });
-
   const [coffeeStore, setCoffeeStore] = useState(
     initialProps.coffeeStore ? initialProps.coffeeStore : {}
   );
@@ -72,7 +70,7 @@ const CoffeeStore = (initialProps) => {
       data.records.length &&
       data.records.length > 0
     ) {
-      console.log("Data from SWR:", data.records[0]);
+      // console.log("Data from SWR:", data.records[0]);
       setCoffeeStore(data.records[0]);
       setVotingcount(data.records[0].voting);
     }
@@ -128,7 +126,7 @@ const CoffeeStore = (initialProps) => {
       const dbCoffeeStore = await response.json();
       return dbCoffeeStore;
     } catch (err) {
-      console.log("Error creating coffee store", err);
+      console.error("Error creating coffee store", err);
     }
   };
 
@@ -153,7 +151,7 @@ const CoffeeStore = (initialProps) => {
         setVotingcount(count);
       }
     } catch (err) {
-      console.log("Error upvoting coffee store", err);
+      console.error("Error upvoting coffee store", err);
     }
   };
 
